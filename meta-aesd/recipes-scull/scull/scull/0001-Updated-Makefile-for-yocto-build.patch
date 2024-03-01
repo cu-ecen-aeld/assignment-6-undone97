@@ -1,0 +1,23 @@
+From 2f2e764c3a67c017cb4f94868e9e692fb0b8ceeb Mon Sep 17 00:00:00 2001
+From: Bruno Santos <brunomsssantos@gmail.com>
+Date: Mon, 20 Nov 2023 13:31:46 +0000
+Subject: [PATCH] Updated Makefile for yocto build
+
+---
+ Makefile | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 7b08c49..138fd11 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,8 +1,5 @@
+ 
+-SUBDIRS =  misc-progs misc-modules \
+-           skull scull scullc scullp lddbus sculld scullv shortprint simple tty \
+-	   pci usb\
+-	   sbull snull short
++SUBDIRS =  misc-progs misc-modules scull 
+ 
+ all: subdirs
+ 

@@ -1,0 +1,44 @@
+#! /bin/sh
+echo "##########################WTF#########################"
+modpath=/lib/modules/$(uname -r)/extra
+mode="664"
+group="staff"
+
+
+load_faulty() {
+	modprobe faulty
+	major=$(awk "\$2==\"faulty\" {print \$1}" /proc/devices)
+	rm -f /dev/faulty
+	mknod /dev/faulty c $major 0
+	
+	chgrp staff /dev/faulty
+	chmod $mode /dev/faulty
+	
+}
+
+
+clean_modules() {
+	echo "removing modules loaded"
+	rmmod hello
+	rmmod faulty
+	
+	#remove nodes...
+	rm -f /dev/faulty
+}
+
+
+case "$1" in
+	start)
+		modprobe hello
+		load_faulty
+	
+	;;
+	stop)
+		clean_modules
+		;;
+	*)
+		echo "usage: $0"
+		exit 1
+
+esac
+exit 0

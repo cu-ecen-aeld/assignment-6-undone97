@@ -1,0 +1,62 @@
+#! /bin/sh
+echo "##########################WTF#########################"
+modpath=/lib/modules/$(uname -r)/extra
+mode="664"
+group="staff"
+
+load_scull_driver() {
+	modprobe scull
+	
+	#major
+	major=$(awk "\$2==\"scull\" {print \$1}" /proc/devices)
+	
+	
+	rm -f /dev/scull*
+	mknod /dev/scull0 c $major 0
+	mknod /dev/scull1 c $major 1
+	mknod /dev/scull2 c $major 2
+	mknod /dev/scull3 c $major 3
+	
+	mknod /dev/scullpipe0 c $major 4
+	mknod /dev/scullpipe1 c $major 5
+	mknod /dev/scullpipe2 c $major 6
+	mknod /dev/scullpipe3 c $major 7
+	
+	mknod /dev/scullsingle c $major 8
+	
+	mknod /dev/sculluid c $major 9
+	
+	mknod /dev/scullwuid c $major 10
+	
+	mknod /dev/scullpriv c $major 11
+	
+	chgrp staff /dev/scull*
+	chmod $mode /dev/scull*
+	
+	#
+}
+
+
+clean_modules() {
+	echo "removing modules loaded"
+	rmmod scull
+	
+	#remove nodes...
+	rm -f /dev/scull*
+	rm -f /dev/faulty
+}
+
+
+case "$1" in
+	start)
+		load_scull_driver	
+	;;
+	stop)
+		clean_modules
+		;;
+	*)
+		echo "usage: $0"
+		exit 1
+
+esac
+exit 0
