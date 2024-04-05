@@ -17,7 +17,7 @@ index 7b08c49..138fd11 100644
 -           skull scull scullc scullp lddbus sculld scullv shortprint simple tty \
 -	   pci usb\
 -	   sbull snull short
-+SUBDIRS =  misc-progs misc-modules scull 
++SUBDIRS =  misc-modules
  
  all: subdirs
  

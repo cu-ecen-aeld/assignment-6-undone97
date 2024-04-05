@@ -13,7 +13,8 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=f098732a73b5f6f3430472f5b094ffdb"
 
 SRC_URI = "git://github.com/cu-ecen-aeld/assignment-7-undone97;protocol=https;branch=master \
            file://0001-Updated-Makefile-for-yocto-build.patch \
-           "
+		   file://S97scullmodule \
+		    "
 
 # Modify these as desired
 PV = "1.0+git${SRCPV}"
@@ -21,15 +22,14 @@ SRCREV = "d4db527c728e6923406403b1a4212bcd2d397fe5"
 inherit module
 
 S = "${WORKDIR}/git"
-FILES:${PN} += "../files/S97scullmodule"
+FILES_${PN} += "${base_libdir}/modules/${KERNEL_VERSION}/extra/scull.ko"
+FILES:${PN} += "${sysconfdir}/init.d/S97scullmodule"
 inherit update-rc.d
 INITSCRIPT_PACKAGES = "${PN}"
 INITSCRIPT_NAME:${PN} = "S97scullmodule"
 
-EXTRA_OEMAKE:append:task-install = " -C ${STAGING_KERNEL_DIR} M=${S}"
 EXTRA_OEMAKE:append:task-install = " -C ${STAGING_KERNEL_DIR} M=${S}/scull"
 EXTRA_OEMAKE += "KERNELDIR=${STAGING_KERNEL_DIR}"
-
 
 do_configure () {
 	:
@@ -40,11 +40,10 @@ do_compile () {
 }
 
 do_install () {
-	install -d ${D}${bindir}
+	install -d ${D}${sysconfdir}/init.d
+	install -d ${D}${base_libdir}/modules/${KERNEL_VERSION}/extra
+	install -m 755 ${S}/scull/scull.ko ${D}${base_libdir}/modules/${KERNEL_VERSION}/extra/scull.ko
 
-	install -m 0755 ${S}/scull/scull_load ${D}/bin/scull_load
-	install -m 0755 ${S}/scull/scull_unload ${D}/bin/scull_unload
-
-	install -m 0755 ${PN} ${D}${sysconfdir}/init.d/
+	install -m 0755 ${WORKDIR}/S97scullmodule ${D}${sysconfdir}/init.d
 
 }

@@ -13,6 +13,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=f098732a73b5f6f3430472f5b094ffdb"
 
 SRC_URI = "git://github.com/cu-ecen-aeld/assignment-7-undone97;protocol=https;branch=master \
            file://0001-Updated-Makefile-for-yocto-build.patch \
+		   file://S98miscmodules \
            "
 
 # Modify these as desired
@@ -21,13 +22,15 @@ SRCREV = "d4db527c728e6923406403b1a4212bcd2d397fe5"
 inherit module
 
 S = "${WORKDIR}/git"
-FILES:${PN} += "../files/S98miscmodules"
+FILES_${PN} += "${base_libdir}/modules/${KERNEL_VERSION}/extra/faulty.ko"
+FILES_${PN} += "${base_libdir}/modules/${KERNEL_VERSION}/extra/hello.ko"
+FILES:${PN} += "${sysconfdir}/init.d/S98miscmodules"
+
 inherit update-rc.d
 INITSCRIPT_PACKAGES = "${PN}"
 INITSCRIPT_NAME:${PN} = "S98miscmodules"
 
-EXTRA_OEMAKE:append:task-install = " -C ${STAGING_KERNEL_DIR} M=${S}"
-EXTRA_OEMAKE:append:task-install = " -C ${STAGING_KERNEL_DIR} M=${S}/scull"
+EXTRA_OEMAKE:append:task-install = " -C ${STAGING_KERNEL_DIR} M=${S}/misc-modules"
 EXTRA_OEMAKE += "KERNELDIR=${STAGING_KERNEL_DIR}"
 
 
@@ -40,11 +43,12 @@ do_compile () {
 }
 
 do_install () {
-	install -d ${D}${bindir}
 
-	
-	install-m 0755 ${S}/misc-modules/module_load ${D}/bin/module_load
-	install -m 0755 ${S}/misc-modules/module_unload ${D}/bin/module_unload
-	install -m 0755 ${PN} ${D}${sysconfdir}/init.d/
+	install -d ${D}${sysconfdir}/init.d
+	install -d ${D}${base_libdir}/modules/${KERNEL_VERSION}/extra
+	install -m 755 ${S}/misc-modules/hello.ko ${D}${base_libdir}/modules/${KERNEL_VERSION}/extra/hello.ko
+	install -m 755 ${S}/misc-modules/faulty.ko ${D}${base_libdir}/modules/${KERNEL_VERSION}/extra/faulty.ko
+
+	install -m 0755 ${WORKDIR}/S98miscmodules ${D}${sysconfdir}/init.d
 
 }

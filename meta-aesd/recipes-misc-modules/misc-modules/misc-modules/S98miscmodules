@@ -29,8 +29,8 @@ clean_modules() {
 
 case "$1" in
 	start)
-		modprobe hello
-		load_faulty
+		insmod $modpath/hello.ko || exit 1
+		insmod $modpath/faulty.ko || exit 1
 	
 	;;
 	stop)
